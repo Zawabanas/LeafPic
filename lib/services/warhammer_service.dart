@@ -5,22 +5,28 @@ import 'package:http_parser/http_parser.dart';
 
 class WarhammerService {
   //final String baseUrl = 'https://127.0.0.1:5276';
-  final String baseUrl = 'http://warhammer40k.somee.com';
+  final String baseUrl = 'http://pruebaleafpic.somee.com';
 
   // Método para crear una nueva facción
   Future<bool> createFaction(
-      String name, String description, File? image) async {
+    String name,
+    String description,
+    File? image,
+  ) async {
     final uri = Uri.parse('$baseUrl/api/factions');
-    final request = http.MultipartRequest('POST', uri)
-      ..fields['name'] = name
-      ..fields['description'] = description;
+    final request =
+        http.MultipartRequest('POST', uri)
+          ..fields['name'] = name
+          ..fields['description'] = description;
 
     if (image != null) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'image',
-        image.path,
-        contentType: MediaType('image', 'jpeg'),
-      ));
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          image.path,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
     }
 
     final response = await request.send();
@@ -39,7 +45,8 @@ class WarhammerService {
             'id': faction['id'].toString(),
             'name': faction['name'].toString(),
             'image': '$baseUrl${faction['imagen'].toString()}',
-            'description': faction['description']?.toString() ??
+            'description':
+                faction['description']?.toString() ??
                 'Descripción no disponible',
           };
         }).toList();
@@ -54,18 +61,25 @@ class WarhammerService {
 
   // edtitar faccion
   Future<bool> editFaction(
-      int id, String name, String description, File? image) async {
+    int id,
+    String name,
+    String description,
+    File? image,
+  ) async {
     final uri = Uri.parse('$baseUrl/api/factions/$id');
-    final request = http.MultipartRequest('PUT', uri)
-      ..fields['name'] = name
-      ..fields['description'] = description;
+    final request =
+        http.MultipartRequest('PUT', uri)
+          ..fields['name'] = name
+          ..fields['description'] = description;
 
     if (image != null) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'image',
-        image.path,
-        contentType: MediaType('image', 'jpeg'),
-      ));
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          image.path,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
     }
 
     final response = await request.send();
