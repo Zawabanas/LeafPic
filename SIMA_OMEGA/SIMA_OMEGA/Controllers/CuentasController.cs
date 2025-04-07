@@ -9,6 +9,8 @@ using System.Security.Claims;
 using System.Text;
 using SIMA_OMEGA.DTOs;
 using SIMA_OMEGA;
+using System.Net.Mail;
+using System.Net;
 
 namespace SIMA_OMEGA.Controllers
 {
@@ -174,6 +176,73 @@ namespace SIMA_OMEGA.Controllers
 
             return Ok(userProfile);
         }
+
+        //Recuperar contraseña
+        //Endpoint para solicitar recuperacion
+        [HttpPost("olvide-password")]
+        public async Task<IActionResult> OlvidePassword([FromBody] OlvidePasswordDTO modelo)
+        {
+            var usuario = await userManager.FindByEmailAsync(modelo.Email);
+            if (usuario == null)
+            {
+                return BadRequest(new { Error = "Usuario no encontrado." });
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(usuario);
+            var urlReset = $"{modelo.UrlRedireccion}?email={modelo.Email}&token={Uri.EscapeDataString(token)}";
+
+            // Enviar correo
+            await EnviarCorreo(modelo.Email, "Recuperación de contraseña", $"Para restablecer tu contraseña haz clic aquí: <a href='{urlReset}'>Recuperar Contraseña</a>");
+
+            return Ok(new { Mensaje = "Se ha enviado un enlace de recuperación al correo." });
+        }
+
+        //Metodo para enviar smtp
+
+        private async Task EnviarCorreo(string destino, string asunto, string cuerpoHtml)
+        {
+            var smtpClient = new SmtpClient("smtp.gmail.com") // Cambia por tu SMTP
+            {
+                Port = 587,
+                Credentials = new NetworkCredential("omarlarapro260800@gmail.com", "ospm ilnu fcvd mfam"),
+                EnableSsl = true,
+            };
+
+            var mensaje = new MailMessage
+            {
+                From = new MailAddress("tu_correo@dominio.com"),
+                Subject = asunto,
+                Body = cuerpoHtml,
+                IsBodyHtml = true,
+            };
+
+            mensaje.To.Add(destino);
+
+            await smtpClient.SendMailAsync(mensaje);
+        }
+
+        // EndPoint para restablecer contraseña
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO modelo)
+        {
+            var usuario = await userManager.FindByEmailAsync(modelo.Email);
+            if (usuario == null)
+            {
+                return BadRequest(new { Error = "Usuario no encontrado." });
+            }
+
+            var resultado = await userManager.ResetPasswordAsync(usuario, modelo.Token, modelo.NuevaPassword);
+
+            if (resultado.Succeeded)
+            {
+                return Ok(new { Mensaje = "Contraseña actualizada exitosamente." });
+            }
+
+            return BadRequest(new { Error = string.Join(", ", resultado.Errors.Select(e => e.Description)) });
+        }
+
+
+
 
 
     }
