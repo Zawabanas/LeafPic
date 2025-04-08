@@ -217,7 +217,7 @@ namespace SIMA_OMEGA.Controllers
             };
 
             mensaje.To.Add(destino);
-
+                
             await smtpClient.SendMailAsync(mensaje);
         }
 

@@ -18,6 +18,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 //Configurar la base de datos
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddControllers();
 
 // Agrega servicios de CORS
 builder.Services.AddCors(options =>
