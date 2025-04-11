@@ -1,6 +1,6 @@
 # examenfrontomarv
 
-A new Flutter project.
+muchachos lo del Sprint 2 se encuentra en esta nueva versión del front. pueden checarlo 
 
 ## Getting Started
 
