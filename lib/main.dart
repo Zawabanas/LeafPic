@@ -1,7 +1,6 @@
 import 'package:examenfrontomarv/providers/alerta_provider.dart';
 import 'package:examenfrontomarv/screens/Agregar.dart';
 import 'package:examenfrontomarv/screens/alerta_screen.dart';
-import 'package:examenfrontomarv/screens/recomendaciones.dart';
 import 'package:examenfrontomarv/screens/recuperar_password_page.dart';
 import 'package:examenfrontomarv/screens/reset_password_page.dart';
 import 'package:examenfrontomarv/screens/sensor_screen.dart';
@@ -58,7 +57,6 @@ class MyApp extends StatelessWidget {
         'agregarCultivo': (_) => AgregarCultivoScreen(),
         'recuperar': (_) => const RecuperarPasswordPage(),
         'restablecer': (_) => const ResetPasswordPage(),
-        'recomendaciones': (_) => const FertilizacionPage(),
         'alertas': (_) => AlertasScreen(),
       },
       scaffoldMessengerKey: NotificationsServices.messengerKey,

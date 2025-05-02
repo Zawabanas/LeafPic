@@ -18,80 +18,9 @@ class AlertasScreen extends StatelessWidget {
                       listen: false,
                     ).limpiarAlertas(),
           ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              switch (value) {
-                case 'simular_humedad':
-                  Provider.of<AlertaProvider>(
-                    context,
-                    listen: false,
-                  ).simularAlertaHumedad();
-                  break;
-                case 'simular_plaga':
-                  Provider.of<AlertaProvider>(
-                    context,
-                    listen: false,
-                  ).simularAlertaPlaga();
-                  break;
-                // Puedes agregar más casos aquí para otras simulaciones
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<String>(
-                  value: 'simular_humedad',
-                  child: Text('Simular Humedad Crítica'),
-                ),
-                PopupMenuItem<String>(
-                  value: 'simular_plaga',
-                  child: Text('Simular Alerta de Plaga'),
-                ),
-                // Agrega más opciones aquí si es necesario
-              ];
-            },
-          ),
         ],
       ),
-      body: Column(
-        children: [
-          _buildSimuladores(
-            context,
-          ), // Puedes eliminar esta línea si no necesitas los botones en la parte superior
-          Expanded(child: _buildListaAlertas(context)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSimuladores(BuildContext context) {
-    // Puedes eliminar este método si decides usar solo el PopupMenuButton
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: Text('Simular Humedad Crítica'),
-            onPressed:
-                () =>
-                    Provider.of<AlertaProvider>(
-                      context,
-                      listen: false,
-                    ).simularAlertaHumedad(),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: Text('Simular Alerta de Plaga'),
-            onPressed:
-                () =>
-                    Provider.of<AlertaProvider>(
-                      context,
-                      listen: false,
-                    ).simularAlertaPlaga(),
-          ),
-        ],
-      ),
+      body: _buildListaAlertas(context),
     );
   }
 
@@ -112,7 +41,7 @@ class AlertasScreen extends StatelessWidget {
               leading: Icon(
                 alertas[index].tipo == "humedad"
                     ? Icons.opacity
-                    : Icons.bug_report,
+                    : Icons.thermostat, // o .bug_report si tienes otros tipos
                 color: alertas[index].critica ? Colors.red : Colors.green,
               ),
               title: Text(alertas[index].mensaje),

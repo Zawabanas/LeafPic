@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class AgregarCultivoScreen extends StatefulWidget {
   @override
@@ -9,7 +11,6 @@ class AgregarCultivoScreen extends StatefulWidget {
 
 class _AgregarCultivoScreenState extends State<AgregarCultivoScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _tipoController = TextEditingController();
   final TextEditingController _hectareasController = TextEditingController();
 
@@ -34,6 +35,39 @@ class _AgregarCultivoScreenState extends State<AgregarCultivoScreen> {
     });
   }
 
+  Future<void> _guardarCultivo() async {
+    final url = Uri.parse('http://SIMAOMEGA.somee.com/api/sembradios');
+
+    String fotoBase64 = '';
+    if (_imagen != null) {
+      final bytes = await _imagen!.readAsBytes();
+      fotoBase64 = base64Encode(bytes);
+    }
+
+    final cultivo = {
+      'tipoPlanta': _tipoController.text,
+      'extensionMts2': double.tryParse(_hectareasController.text) ?? 0,
+      'fotoSembradio': fotoBase64,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(cultivo),
+    );
+
+    if (response.statusCode == 201) {
+      Navigator.pop(context, true); // Para que Principal.dart recargue
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Cultivo agregado')));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Error al agregar cultivo')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,13 +78,6 @@ class _AgregarCultivoScreenState extends State<AgregarCultivoScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                controller: _nombreController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre del cultivo',
-                ),
-                validator: (value) => value!.isEmpty ? 'Campo requerido' : null,
-              ),
               TextFormField(
                 controller: _tipoController,
                 decoration: const InputDecoration(labelText: 'Tipo de cultivo'),
@@ -88,20 +115,11 @@ class _AgregarCultivoScreenState extends State<AgregarCultivoScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Aquí podrías enviar los datos al backend cuando esté listo
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Cultivo agregado')),
-                    );
-                    Navigator.pop(context);
+                    _guardarCultivo();
                   }
                 },
                 child: const Text('Guardar'),
               ),
-              const SizedBox(height: 50),
-              Text(
-                "Nota del desarrollador frontend: Esto es una vista previa de la funcionalidad",
-              ),
-              Text("aun no hay un endpoint para agregar cultivos implementado"),
             ],
           ),
         ),

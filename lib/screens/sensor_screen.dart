@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+
 import 'package:examenfrontomarv/models/historial_sensor.dart';
 import 'package:examenfrontomarv/services/sensor_service.dart';
+import '../providers/alerta_provider.dart';
 
 class SensorHistorialScreen extends StatefulWidget {
   @override
@@ -40,6 +43,35 @@ class _SensorHistorialScreenState extends State<SensorHistorialScreen> {
       setState(() {
         _historialSensor = historial;
       });
+
+      // Verificamos alertas automáticas
+      final alertaProvider = Provider.of<AlertaProvider>(
+        context,
+        listen: false,
+      );
+      for (final s in historial) {
+        if (s.temperatura > 35) {
+          alertaProvider.agregarAlerta(
+            tipo: "temperatura",
+            mensaje: "¡Temperatura muy alta! (${s.temperatura}°C)",
+            critica: true,
+          );
+        } else if (s.temperatura < 10) {
+          alertaProvider.agregarAlerta(
+            tipo: "temperatura",
+            mensaje: "¡Temperatura muy baja! (${s.temperatura}°C)",
+            critica: true,
+          );
+        }
+
+        if (s.humedad < 20) {
+          alertaProvider.agregarAlerta(
+            tipo: "humedad",
+            mensaje: "¡Humedad muy baja! (${s.humedad}%)",
+            critica: true,
+          );
+        }
+      }
     } catch (e) {
       debugPrint("Error al cargar historial: $e");
     }
